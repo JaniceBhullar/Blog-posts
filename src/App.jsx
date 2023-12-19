@@ -3,6 +3,7 @@ import Nav from "./Nav";
 import Home from "./Home";
 import NewPosts from "./Newposts";
 import PostPage from "./PostPage";
+import EditPost from "./EditPost";
 import Footer from "./Footer";
 import About from "./About";
 import PageNotFound from "./PageNotFound";
@@ -17,6 +18,8 @@ function App() {
   const [searchResults, setSearchResults] = useState([]);
   const [postTitle, setPostTitle] = useState("");
   const [postBody, setPostBody] = useState("");
+  const [editTitle, setEditTitle] = useState("");
+  const [editBody, setEditBody] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -68,6 +71,23 @@ function App() {
     }
   };
 
+  // this is Update (put) of CRUD
+  const handleEdit = async (id) => {
+    const datetime = format(new Date(), "MMMM dd, yyyy pp");
+    const updatedPost = { id, title: editTitle, datetime, body: editBody };
+    try {
+      const response = await api.put(`/posts/${id}`, updatedPost);
+      setPosts(
+        posts.map((post) => (post.id === id ? { ...response.data } : post))
+      );
+      setEditTitle("");
+      setEditBody("");
+      navigate("/");
+    } catch (err) {
+      console.log(`Error: ${err.message}`);
+    }
+  };
+
   return (
     <>
       <div className="App">
@@ -75,6 +95,7 @@ function App() {
         <Nav search={search} setSearch={setSearch} />
         <Routes>
           <Route path="/" element={<Home posts={searchResults} />} />
+
           <Route
             path="/post"
             element={
@@ -82,15 +103,31 @@ function App() {
                 handleSubmit={handleSubmit}
                 postTitle={postTitle}
                 setPostTitle={setPostTitle}
-                postbody={postBody}
+                postBody={postBody}
                 setPostBody={setPostBody}
               />
             }
           />
+
           <Route
             path="/post/:id"
             element={<PostPage posts={posts} handleDelete={handleDelete} />}
           />
+
+          <Route
+            path="/edit/:id"
+            element={
+              <EditPost
+                posts={posts}
+                handleEdit={handleEdit}
+                editTitle={editTitle}
+                setEditTitle={setEditTitle}
+                editBody={editBody}
+                setEditBody={setEditBody}
+              />
+            }
+          />
+
           <Route path="/about" element={<About />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
