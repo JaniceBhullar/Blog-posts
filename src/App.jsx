@@ -9,34 +9,33 @@ import PageNotFound from "./PageNotFound";
 import { Routes, Route, useNavigate } from "react-router";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
-// import { useState, useEffect } from "react";
+import api from "./api/posts";
 
 function App() {
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      title: "Post first",
-      datetime: "july 1, 2023 11:23:36 am",
-      body: "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).",
-    },
-    {
-      id: 2,
-      title: "Post second",
-      datetime: "july 21, 2023 11:23:36 am",
-      body: "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).",
-    },
-    {
-      id: 3,
-      title: "Post third",
-      datetime: "august 11, 2023 11:23:36 am",
-      body: "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).",
-    },
-  ]);
+  const [posts, setPosts] = useState([]);
   const [search, setSearch] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [postTitle, setPostTitle] = useState("");
   const [postBody, setPostBody] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await api.get("/posts");
+        setPosts(response.data);
+      } catch (err) {
+        if (err.response) {
+          console.log(err.response.data);
+          console.log(err.response.status);
+          console.log(err.response.headers);
+        } else {
+          console.log(`Error: ${err.message}`);
+        }
+      }
+    };
+    fetchPosts();
+  }, []);
 
   useEffect(() => {
     const newSearch = posts.filter(
@@ -52,16 +51,21 @@ function App() {
     setPosts(postList);
     navigate("/");
   };
-
-  const handleSubmit = (e) => {
+  // this is create of CRUD
+  const handleSubmit = async (e) => {
     e.preventDefault;
     const id = posts.length ? posts[posts.length - 1].id + 1 : 1;
     const datetime = format(new Date(), "MMMM dd, yyyy pp");
     const newPost = { id, title: postTitle, datetime, body: postBody };
-    setPosts([...posts, newPost]);
-    setPostTitle("");
-    setPostBody("");
-    navigate("/");
+    try {
+      const response = await api.post("/posts", newPost);
+      setPosts([...posts, response.data]);
+      setPostTitle("");
+      setPostBody("");
+      navigate("/");
+    } catch (err) {
+      console.log(`Error: ${err.message}`);
+    }
   };
 
   return (

@@ -23,9 +23,8 @@ export default function NewPosts({
           value={postBody}
           onChange={(e) => setPostBody(e.target.value)}
         />
-          <button>Submit</button>
+        <button>Submit</button>
       </form>
-    
     </main>
   );
 }
