@@ -1,7 +1,8 @@
 export default function Footer() {
+  const today = new Date();
   return (
-    <footer className="footer">
-      <p>Footer</p>
+    <footer className="Footer">
+      <p>Copyright &copy; {today.getFullYear()}</p>
     </footer>
   );
 }

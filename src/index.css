@@ -11,7 +11,7 @@ html {
 }
 
 body {
-  min-height: 100vh;
+  /* min-height: 100vh; */
   font-family: 'Open Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -125,7 +125,7 @@ body {
   cursor: pointer;
 }
 
-.Home, .NewPost, .PostPage, .About, .Missing {
+.Home, .NewPost, .PostPage, .About, .PageNotFound {
   width: 100%;
   flex-grow: 1;
   padding: 1rem;
