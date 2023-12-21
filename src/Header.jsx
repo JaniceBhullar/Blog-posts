@@ -1,6 +1,10 @@
+/* eslint-disable react/prop-types */
 import { FaLaptop, FaTabletAlt, FaMobileAlt } from "react-icons/fa";
+import useWindowSize from "./hooks/useWindowSize";
 
-export default function Header({ title, width }) {
+export default function Header({ title }) {
+  const { width } = useWindowSize();
+
   return (
     <header className="Header">
       <h1>{title}</h1>
