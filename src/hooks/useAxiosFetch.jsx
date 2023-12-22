@@ -1,52 +1,50 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const useAxiosFetch = (dataUrl) => {
-  const [response, setResponse] = useState([]);
+axios.defaults.baseURL = "http://localhost:5174";
+
+export default function useAxiosFetch() {
+  const [data, setData] = useState([]);
   const [fetchError, setFetchError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
-    // const source = axios.CancelToken.source();
-    const controller = new AbortController();
+    const source = axios.CancelToken.source();
 
     const fetchData = async (url) => {
       setIsLoading(true);
       try {
-        const res = await axios.get(url, {
-          // cancelToken: source.token
-          signal: controller.signal,
+        const response = await axios.get(url, {
+          cancelToken: source.token,
         });
         if (isMounted) {
-          setResponse(res.data);
+          setData(response.data);
           setFetchError(null);
         }
       } catch (err) {
         if (isMounted) {
           setFetchError(err.message);
-          setResponse([]);
+          setData([]);
         }
       } finally {
         isMounted && setIsLoading(false);
       }
     };
-    fetchData(dataUrl);
+
+    fetchData();
 
     const cleanUp = () => {
+      console.log("clean up function");
       isMounted = false;
-      // source.cancel();
-      controller.abort();
+      source.cancel();
     };
+
     return cleanUp;
-  }, [dataUrl]);
+  }, []);
 
-  return { response, fetchError, isLoading };
-};
-
-export default useAxiosFetch;
-
-// export default useAxiosFetch;
+  return { data, fetchError, isLoading };
+}
 
 // We can also cancel or abort a request when we no longer require the
 //     requested data for example, when the user navigates from the current page to another page.

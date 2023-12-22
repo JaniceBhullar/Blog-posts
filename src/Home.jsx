@@ -24,10 +24,8 @@ const Home = () => {
 };
 export default Home;
 
-{
-  /* {posts.length ? (
+/* {posts.length ? (
         <Feed posts={posts} />
       ) : (
         <p style={{ marginTop: "2rem" }}>No posts to display</p>
       )} */
-}
